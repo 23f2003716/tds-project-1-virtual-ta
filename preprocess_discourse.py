@@ -295,17 +295,22 @@ class DiscoursePreprocessor:
         # Clean the data
         cleaned_data = self.clean_topic_data(data)
 
-        # Convert to markdown
-        markdown_content = self.convert_to_markdown(cleaned_data)
-
         # Create output filename
         topic_id = cleaned_data.get('id', 'unknown')
         slug = cleaned_data.get('slug', 'untitled')
         output_filename = f"{topic_id}_{slug}.md"
         output_path = os.path.join(output_dir, output_filename)
 
+        # Check if markdown file already exists
+        if os.path.exists(output_path):
+            print(f"Skipping: {output_path} already exists")
+            return output_path
+
         # Ensure output directory exists
         os.makedirs(output_dir, exist_ok=True)
+
+        # Convert to markdown (only if file doesn't exist)
+        markdown_content = self.convert_to_markdown(cleaned_data)
 
         # Save markdown file
         with open(output_path, 'w', encoding='utf-8') as f:
